@@ -3,7 +3,7 @@ const app = express()
 
 app.use(express.json()) // json=parser, takes JSON data to JS obejct, attach to request obj 
 
-let notes = [
+let phonebooks = [
     {
         "id": "1",
         "name": "Arto Hellas",
@@ -31,21 +31,74 @@ app.get('/', (request, response) => {
 })
 
 app.get('/api/persons', (request, response) => {
-    response.json(notes) // respond JSON.stringify, set to application/json
+    response.json(phonebooks) // respond JSON.stringify, set to application/json
 })
 
-app.get('/api/notes/:id', (request, response) => {
-    const id = request.params.id;
-    const note = notes.find(note => note.id === id);
+app.get('/api/info', (request, response) => {
+    const currentTime = new Date().toString();
+    const numberOfEntries = phonebooks.length;
 
-    if (note) {
-        response.json(note);
+    const responseText = `<p>phonebooks has info for ${numberOfEntries} people</p> <p>${currentTime}</p>`;
+    // Send the response
+    response.send(responseText);
+})
+
+app.get('/api/persons/:id', (request, response) => {
+    const id = request.params.id;
+    const phonebook = phonebooks.find(phonebooks => phonebooks.id === id);
+
+    if (phonebook) {
+        response.json(phonebooks);
     } else {
         response.statusMessage = "Persons with the specified ID not found";
-        response.status(404).json({ error: "Note with the specified ID not found" });
+        response.status(404).json({ error: "phonebook with the specified ID not found" });
     }
 });
 
+
+app.delete('/api/persons/:id', (request, response) => {
+    const id = request.params.id
+    phonebooks = phonebooks.filter(phonebook => phonebook.id !== id)
+  
+    response.status(204).end()
+ })
+
+ //create new entries
+ const generateId = () => {
+    const maxId = phonebooks.length > 0
+      ? Math.max(...phonebooks.map(n => Number(n.id))) // "three dot" spread syntax transfrom array into indi nums
+      : 0
+    return String(maxId + 1)
+  }
+app.post('/api/persons', (request, response) => {
+    const body = request.body
+  
+    if (!body.name || !body.number) {
+        return response.status(400).json({ 
+            error: 'name or number missing' 
+        });
+    }
+    
+    // Check if the name already exists in the phonebook
+    const nameExists = phonebooks.some(person => person.name === body.name);
+    if (nameExists) {
+        return response.status(400).json({ 
+            error: 'name must be unique' 
+        });
+    }
+    
+    const phonebook = {
+      name: body.name,
+      number: body.number,
+      //important: Boolean(body.important) || false,
+      id: generateId(),
+    }
+  
+    phonebooks = phonebooks.concat(phonebook)
+  
+    response.json(phonebooks)
+})
+  
 const PORT = 3001
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`)
