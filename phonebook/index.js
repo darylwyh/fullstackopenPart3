@@ -1,7 +1,19 @@
 const express = require('express')
+const morgan = require('morgan'); // Import morgan
 const app = express()
 
+//app.use(morgan('tiny')); // Use the "tiny" configuration for logging
 app.use(express.json()) // json=parser, takes JSON data to JS obejct, attach to request obj 
+
+// Custom logging, more info than tiny 
+// Custom token to log request body
+morgan.token('body', (req) => {
+    return JSON.stringify(req.body);
+});
+
+// Use morgan with a custom format that includes the request body for POST requests
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'));
+
 
 let phonebooks = [
     {
@@ -86,7 +98,7 @@ app.post('/api/persons', (request, response) => {
             error: 'name must be unique' 
         });
     }
-    
+
     const phonebook = {
       name: body.name,
       number: body.number,

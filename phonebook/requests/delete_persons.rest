@@ -3,3 +3,7 @@ DELETE http://localhost:3001/api/persons/3
 ###
  
 GET http://localhost:3001/api/persons
+
+###
+
+HEAD http://localhost:3001/api/persons
