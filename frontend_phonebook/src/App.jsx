@@ -120,6 +120,7 @@ const App = () => {
   };
 
   console.log("Persons array before rendering:", persons);
+  console.log("Prove of dev logging ");
 
   return (
     <div>
