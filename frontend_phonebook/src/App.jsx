@@ -21,19 +21,20 @@ const App = () => {
     personsService
       .getAll()
       .then(initialPersons => {
-        console.log('promise fulfilled')
+        console.log('Initial persons fetched:', initialPersons);
         setPersons(initialPersons)
       })
   }, [])
 
   const addPerson = (event) => {
     event.preventDefault();
-    const existingPerson = persons.find(person => person.name === newName);
-    // if (persons.some(person => person.name === newName))
     const newPerson = { name: newName, number: newNumber };
-
+    const existingPerson = persons.find(person => person.name.toLowerCase() === newName.toLowerCase());
+    // if (persons.some(person => person.name === newName))
+    console.log("im here 2")
     // Check if the name already exists in the phonebook
     if (existingPerson) {
+      console.log("im here")
       // alert(`${newName} is already added to the phonebook`); // JS template string
       if (window.confirm(`${newName} is already in the phonebook, replace the old number with a new one?`)) {
         // Use PUT method to update the person's number
@@ -118,6 +119,8 @@ const App = () => {
     }, 5000);
   };
 
+  console.log("Persons array before rendering:", persons);
+
   return (
     <div>
       <h2>Phonebook</h2>
@@ -145,7 +148,64 @@ const App = () => {
 
 export default App
 
-/*
+/* 
+if (existingPerson) {
+    console.log("im here");
+    if (window.confirm(`${newName} is already in the phonebook, replace the old number with a new one?`)) {
+      personsService
+        .update(existingPerson.id, newPerson)
+        .then(updatedPerson => {
+          setPersons(persons.map(person => person.id !== existingPerson.id ? person : updatedPerson));
+          setNewName('');
+          setNewNumber('');
+          showNotification(`Updated ${updatedPerson.name}'s number`, 'success');
+        })
+        .catch(error => {
+          if (error.response && error.response.status === 404) {
+            showNotification(`Information of ${newName} has already been removed from the server.`, 'error');
+            setPersons(persons.filter(person => person.id !== existingPerson.id));
+          } else {
+            showNotification(`Failed to update ${newName}'s information.`, 'error');
+          }
+        });
+    }
+  } else {
+    personsService
+      .create(newPerson)
+      .then(returnedPerson => {
+        // Use callback to ensure we're working with the latest state
+        setPersons(prevPersons => {
+          const updatedPersons = prevPersons.concat(returnedPerson);
+          console.log("Updated persons list after adding:", updatedPersons);
+          return updatedPersons;
+        });
+        setNewName('');
+        setNewNumber('');
+        showNotification(`Added ${newPerson.name}`, 'success');
+      })
+      .catch(error => {
+        showNotification(`Failed to add ${newPerson.name}.`, 'error');
+      });
+  }
+};
+
+personsService
+        .create(newPerson)
+        .then(returnedPerson => {
+          if (Array.isArray(returnedPerson)) {
+            console.error("returnedPerson is an array, expected a single object:", returnedPerson);
+          } else {
+            const updatedPersons = [...prevPersons, returnedPerson];
+            console.log("Updated persons list after adding:", updatedPersons);
+            setPersons(updatedPersons); 
+          }
+          setNewName('');
+          setNewNumber('');
+          showNotification(`Added ${newPerson.name}`, 'success');
+        })
+        .catch(error => {
+          showNotification(`Failed to add ${newPerson.name}.`, 'error');
+        });
 const addPerson = (event) => {
     event.preventDefault();
     const existingPerson = persons.find(person => person.name === newName);
