@@ -1,9 +1,12 @@
 const express = require('express')
 const morgan = require('morgan'); // Import morgan
+const cors = require('cors')
+ 
 const app = express()
 
 //app.use(morgan('tiny')); // Use the "tiny" configuration for logging
 app.use(express.json()) // json=parser, takes JSON data to JS obejct, attach to request obj 
+app.use(cors())
 
 // Custom logging, more info than tiny 
 // Custom token to log request body

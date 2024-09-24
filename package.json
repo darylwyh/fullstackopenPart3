@@ -1,5 +1,12 @@
 {
+  "name": "fullstackopenpart3",
+  "private": true,
+  "workspaces": [
+    "phonebook",
+    "frontend_phonebook"
+  ],
   "dependencies": {
+    "fullstackopenpart3": "file:",
     "morgan": "^1.10.0"
   }
 }

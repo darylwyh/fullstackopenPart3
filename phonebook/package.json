@@ -11,11 +11,13 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "cors": "^2.8.5",
     "express": "^4.21.0",
     "morgan": "^1.10.0",
     "phonebook": "file:"
   },
   "devDependencies": {
+    "@flydotio/dockerfile": "^0.5.8",
     "nodemon": "^3.1.7"
   }
 }
